@@ -1,25 +1,81 @@
-# TEALScript Project
+# CertiChain
 
-## Documentation
+A blockchain-based certificate verification and revocation system built on Algorand.
 
-For TEALScript documentation, go to https://tealscript.algo.xyz
+## Problem
+Traditional certificates can be forged or modified, making verification difficult.
 
-## Usage
+## Solution
+CertiChain stores certificate document hashes on the Algorand blockchain, allowing anyone to verify authenticity without storing personal information or certificate PDFs on-chain.
 
-### Algokit
+## Features
+- Issue certificates (application creator/admin only)
+- Verify certificates using document hashes
+- Revoke previously issued certificates
+- Reject incorrect hashes
+- Reject verification of revoked certificates
+- Store certificate hashes using Algorand Box storage
 
-This template assumes you have a local network running on your machine. The easiet way to setup a local network is with [algokit](https://github.com/algorandfoundation/algokit-cli). If you don't have Algokit or its dependencies installed locally you can open this repository in a GitHub codespace via https://codespaces.new and choosing this repo.
+## Technology Stack
+- Algorand Blockchain
+- TEALScript
+- TypeScript
+- AlgoKit Utils
+- Algorand SDK
+- Jest
+- Node.js
 
-### Build Contract
+## Architecture
+1. Admin submits a certificate ID and document hash.
+2. Smart contract stores the hash on Algorand.
+3. Anyone can submit a certificate ID and hash for verification.
+4. The contract checks the stored hash and revocation status.
+5. Admin can revoke a certificate.
 
-`npm run build` will compile the contract to TEAL and generate an ABI and appspec JSON in [./contracts/artifacts](./contracts/artifacts/) and a algokit TypeScript client in [./contracts/clients](./contracts/clients/).
+## Test Results
 
-`npm run compile-contract` or `npm run generate-client` can be used to compile the contract or generate the contract seperately.
+LocalNet:
+- Certificate issuance: Passed
+- Correct hash verification: Passed
+- Incorrect hash rejection: Passed
+- Certificate revocation: Passed
+- Revoked certificate rejection: Passed
 
-### Run Tests
+TestNet:
+- Deployment: Successful
+- Certificate issuance: Successful
+- Verification: Successful
+- Revocation: Successful
+- Post-revocation verification: Rejected correctly
 
-`npm run test` will execute the tests defined in [./\_\_test\_\_](./__test__) 
+## Algorand TestNet Deployment
 
-### Lint
+Application ID: 775689650
 
-`npm run lint` will lint the contracts and tests with ESLint.
+Deployer address:
+FJUQA627F5IWWCHPUOFC3COKCKJUNSL7WV25EMFB3F6JGFCZCG2RFCPDZQ
+
+Deployment transaction:
+HUKQ3CLBYYZI4D6YJIE7LDHLZ6KGUTPWCDWXVJO6NJ4O3TGRVR6A
+
+Revocation transaction:
+3BAOOKYGD4ZZ2XLEHHKNEB2N5AWZVNHKGCKRDOVOVMVJ34PSQ4LA
+
+## Security and Privacy
+- Only the application creator can issue and revoke certificates.
+- Certificate documents and personal information are not stored on-chain.
+- Only certificate hashes and minimal status data are stored.
+
+## Current Limitations
+- The current MVP validates hash length, with stricter hexadecimal validation planned.
+- The demonstration uses a sample hash.
+- A production frontend and certificate-upload workflow are future improvements.
+
+## Future Scope
+- Web-based certificate issuer dashboard
+- QR-based public verification
+- Certificate metadata and timestamps
+- Integration with educational institutions
+
+## License
+MIT

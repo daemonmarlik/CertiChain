@@ -1,0 +1,57 @@
+{
+  "name": "CertiChain",
+  "desc": "",
+  "methods": [
+    {
+      "name": "createApplication",
+      "args": [],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "issueCertificate",
+      "args": [
+        {
+          "name": "certificateId",
+          "type": "string"
+        },
+        {
+          "name": "documentHash",
+          "type": "string"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "verifyCertificate",
+      "args": [
+        {
+          "name": "certificateId",
+          "type": "string"
+        },
+        {
+          "name": "documentHash",
+          "type": "string"
+        }
+      ],
+      "returns": {
+        "type": "bool"
+      }
+    },
+    {
+      "name": "revokeCertificate",
+      "args": [
+        {
+          "name": "certificateId",
+          "type": "string"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ]
+}

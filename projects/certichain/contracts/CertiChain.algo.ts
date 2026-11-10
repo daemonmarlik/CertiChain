@@ -1,57 +1,67 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
 export class CertiChain extends Contract {
-  /**
-   * Calculates the sum of two numbers
-   *
-   * @param a
-   * @param b
-   * @returns The sum of a and b
-   */
-  private getSum(a: uint64, b: uint64): uint64 {
-    return a + b;
+
+  certificateHashes = BoxMap<string, string>({
+    prefix: 'h',
+  });
+
+  revokedCertificates = BoxMap<string, boolean>({
+    prefix: 'r',
+  });
+
+  // Application creation
+  createApplication(): void {}
+
+  // Issue certificate (Admin only)
+  issueCertificate(
+    certificateId: string,
+    documentHash: string
+  ): void {
+
+    assert(this.txn.sender === this.app.creator);
+
+    assert(!this.certificateHashes(certificateId).exists);
+
+    assert(documentHash.length === 64);
+
+    this.certificateHashes(certificateId).value = documentHash;
+
+    this.revokedCertificates(certificateId).value = false;
   }
 
-  /**
-   * Calculates the difference between two numbers
-   *
-   * @param a
-   * @param b
-   * @returns The difference between a and b.
-   */
-  private getDifference(a: uint64, b: uint64): uint64 {
-    return a >= b ? a - b : b - a;
+  // Verify certificate (Anyone)
+  verifyCertificate(
+    certificateId: string,
+    documentHash: string
+  ): boolean {
+
+    if (!this.certificateHashes(certificateId).exists) {
+      return false;
+    }
+
+    if (!this.revokedCertificates(certificateId).exists) {
+      return false;
+    }
+
+    if (this.revokedCertificates(certificateId).value) {
+      return false;
+    }
+
+    return this.certificateHashes(certificateId).value === documentHash;
   }
 
-  /**
-   * A method that takes two numbers and does either addition or subtraction
-   *
-   * @param a The first uint64
-   * @param b The second uint64
-   * @param operation The operation to perform. Can be either 'sum' or 'difference'
-   *
-   * @returns The result of the operation
-   */
-  doMath(a: uint64, b: uint64, operation: string): uint64 {
-    let result: uint64;
+  // Revoke certificate (Admin only)
+  revokeCertificate(certificateId: string): void {
 
-    if (operation === 'sum') {
-      result = this.getSum(a, b);
-    } else if (operation === 'difference') {
-      result = this.getDifference(a, b);
-    } else throw Error('Invalid operation');
+    assert(this.txn.sender === this.app.creator);
 
-    return result;
-  }
+    assert(this.certificateHashes(certificateId).exists);
 
-  /**
-   * A demonstration method used in the AlgoKit fullstack template.
-   * Greets the user by name.
-   *
-   * @param name The name of the user to greet.
-   * @returns A greeting message to the user.
-   */
-  hello(name: string): string {
-    return 'Hello, ' + name;
+    assert(this.revokedCertificates(certificateId).exists);
+
+    assert(!this.revokedCertificates(certificateId).value);
+
+    this.revokedCertificates(certificateId).value = true;
   }
 }
